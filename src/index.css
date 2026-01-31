@@ -60,6 +60,7 @@ body {
   color: var(--text);
   background: var(--background);
   font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+  scrollbar-gutter: stable;
 }
 
 img {
@@ -69,4 +70,9 @@ img {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading), system-ui, -apple-system, sans-serif;
+}
+
+/* Prevent scrollbar from pushing content */
+.scrollbar-stable {
+  scrollbar-gutter: stable;
 }
