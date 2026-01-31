@@ -1,22 +1,18 @@
 const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose(); // For verbose logging in SQLite
+const Database = require('better-sqlite3');
 
 // Use process.cwd() to get the current working directory (project root) and add the db to that area
 const dbPath = path.join(process.cwd(), 'app.db');
 console.log('Database path:', dbPath);
 
 // Initialize the database
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    return console.error('Failed to connect to the database:', err.message);
-  }
-  console.log('Connected to the SQLite database.');
-});
+const db = new Database(dbPath);
+console.log('Connected to the SQLite database.');
 
-// Create tables asynchronously
-db.serialize(() => {
-  db.run(`
+// Create tables synchronously
+try {
+  db.exec(`
     CREATE TABLE IF NOT EXISTS components (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
@@ -27,34 +23,23 @@ db.serialize(() => {
       code3 TEXT,
       isPinned INTEGER DEFAULT 0
     )
-  `, (err) => {
-    if (err) {
-      console.error('Error creating components table:', err.message);
-    }
-  });
+  `);
 
-  db.run(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS settings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       themeSet TEXT
     )
-  `, (err) => {
-    if (err) {
-      console.error('Error creating settings table:', err.message);
-    }
-  });
+  `);
 
   // Default theme setup
-  db.run(`
-    INSERT OR IGNORE INTO settings (id, themeSet) VALUES (1, 'light')
-  `, (err) => {
-    if (err) {
-      console.error('Error inserting default theme:', err.message);
-    }
-  });
-});
+  const stmt = db.prepare('INSERT OR IGNORE INTO settings (id, themeSet) VALUES (?, ?)');
+  stmt.run(1, 'light');
 
-console.log('Database initialized and tables created.');
+  console.log('Database initialized and tables created.');
+} catch (err) {
+  console.error('Error initializing database:', err.message);
+}
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -77,6 +62,15 @@ const createWindow = () => {
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.webContents.openDevTools();
+
+  // Send maximize/unmaximize events to renderer
+  mainWindow.on('maximize', () => {
+    mainWindow.webContents.send('window-maximized');
+  });
+
+  mainWindow.on('unmaximize', () => {
+    mainWindow.webContents.send('window-unmaximized');
+  });
 
   // Register global shortcut for refreshing the window
   const ret = globalShortcut.register('CommandOrControl+R', () => {
@@ -115,15 +109,25 @@ ipcMain.handle('minimize-window', (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
   window.minimize();
 });
+
 //Maximise application
 ipcMain.handle('maximize-window', (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
-  if (window.isMaximized()) {
-    window.unmaximize();
-  } else {
-    window.maximize();
-  }
+  window.maximize();
 });
+
+//Unmaximise/Restore application
+ipcMain.handle('unmaximize-window', (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  window.unmaximize();
+});
+
+// Check if window is maximized
+ipcMain.handle('is-maximized', (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  return window.isMaximized();
+});
+
 // Close Application
 ipcMain.handle('close-window', (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -135,107 +139,93 @@ ipcMain.handle('close-window', (event) => {
 // Insert component
 ipcMain.handle('insert-component', async (event, component) => {
   const { name, tags, languages, code1, code2, code3 } = component;
-  return new Promise((resolve, reject) => {
+  try {
     const stmt = db.prepare(`
       INSERT INTO components (name, tags, languages, code1, code2, code3) 
       VALUES (?, ?, ?, ?, ?, ?)
     `);
-    stmt.run(name, JSON.stringify(tags), JSON.stringify(languages), code1, code2, code3, function (err) {
-      if (err) {
-        console.error('Error inserting component:', err.message);
-        return reject(err);
-      }
-      resolve(this.lastID); // Return the last inserted row ID
-    });
-  });
+    const info = stmt.run(name, JSON.stringify(tags), JSON.stringify(languages), code1, code2, code3);
+    return info.lastInsertRowid;
+  } catch (err) {
+    console.error('Error inserting component:', err.message);
+    throw err;
+  }
 });
 
 // Get components
 ipcMain.handle('get-components', async () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM components', (err, rows) => {
-      if (err) {
-        console.error('Error fetching components:', err.message);
-        return reject(err);
-      }
-      const components = rows.map(component => ({
-        ...component,
-        tags: JSON.parse(component.tags),  // Parse JSON array
-        languages: JSON.parse(component.languages)  // Parse JSON array
-      }));
-      resolve(components);
-    });
-  });
+  try {
+    const stmt = db.prepare('SELECT * FROM components');
+    const rows = stmt.all();
+    const components = rows.map(component => ({
+      ...component,
+      tags: JSON.parse(component.tags),
+      languages: JSON.parse(component.languages)
+    }));
+    return components;
+  } catch (err) {
+    console.error('Error fetching components:', err.message);
+    throw err;
+  }
 });
 
 // Search components
 ipcMain.handle('search-components', async (event, searchQuery) => {
-  return new Promise((resolve, reject) => {
+  try {
     const likeQuery = `%${searchQuery}%`;
-    db.all(`
+    const stmt = db.prepare(`
       SELECT * FROM components 
       WHERE name LIKE ? OR tags LIKE ? OR languages LIKE ?
-    `, [likeQuery, likeQuery, likeQuery], (err, rows) => {
-      if (err) {
-        console.error('Error searching components:', err.message);
-        return reject(err);
-      }
-      const components = rows.map(component => ({
-        ...component,
-        tags: JSON.parse(component.tags),  // Parse JSON array
-        languages: JSON.parse(component.languages)  // Parse JSON array
-      }));
-      resolve(components);
-    });
-  });
+    `);
+    const rows = stmt.all(likeQuery, likeQuery, likeQuery);
+    const components = rows.map(component => ({
+      ...component,
+      tags: JSON.parse(component.tags),
+      languages: JSON.parse(component.languages)
+    }));
+    return components;
+  } catch (err) {
+    console.error('Error searching components:', err.message);
+    throw err;
+  }
 });
 
 // Delete component
 ipcMain.handle('delete-component', async (event, componentId) => {
-  return new Promise((resolve, reject) => {
-    db.run('DELETE FROM components WHERE id = ?', [componentId], (err) => {
-      if (err) {
-        console.error('Error deleting component:', err.message);
-        return reject(err);
-      }
-      resolve({ success: true });
-    });
-  });
+  try {
+    const stmt = db.prepare('DELETE FROM components WHERE id = ?');
+    stmt.run(componentId);
+    return { success: true };
+  } catch (err) {
+    console.error('Error deleting component:', err.message);
+    throw err;
+  }
 });
 
 // Update component
 ipcMain.handle('update-component', async (event, updatedComponent) => {
   const { id, name, tags, languages, code1, code2, code3 } = updatedComponent;
-  return new Promise((resolve, reject) => {
+  try {
     const stmt = db.prepare(`
       UPDATE components
       SET name = ?, tags = ?, languages = ?, code1 = ?, code2 = ?, code3 = ?
       WHERE id = ?
     `);
-    stmt.run(name, JSON.stringify(tags), JSON.stringify(languages), code1, code2, code3, id, (err) => {
-      if (err) {
-        console.error('Error updating component:', err.message);
-        return reject(err);
-      }
-      resolve({ success: true });
-    });
-  });
+    stmt.run(name, JSON.stringify(tags), JSON.stringify(languages), code1, code2, code3, id);
+    return { success: true };
+  } catch (err) {
+    console.error('Error updating component:', err.message);
+    throw err;
+  }
 });
 
 // IPC handler to pin/unpin a component
 ipcMain.handle('toggle-pin-component', async (event, componentId, isPinned) => {
   try {
-    return new Promise((resolve, reject) => {
-      const stmt = db.prepare('UPDATE components SET isPinned = ? WHERE id = ?');
-      stmt.run(isPinned ? 1 : 0, componentId, function(err) {
-        if (err) {
-          console.error(`Error updating pin state for component ID ${componentId}:`, err.message);
-          return reject(err);
-        }
-        console.log(`Component with ID ${componentId} pinned state updated to ${isPinned}`);
-        resolve({ success: true });
-      });
-    });
+    const stmt = db.prepare('UPDATE components SET isPinned = ? WHERE id = ?');
+    stmt.run(isPinned ? 1 : 0, componentId);
+    console.log(`Component with ID ${componentId} pinned state updated to ${isPinned}`);
+    return { success: true };
   } catch (error) {
     console.error('Error updating pin state:', error);
     throw error;
@@ -248,93 +238,72 @@ ipcMain.handle('toggle-pin-component', async (event, componentId, isPinned) => {
 
 // Insert search history
 ipcMain.handle('insert-search-history', async (event, searchQuery) => {
-  return new Promise((resolve, reject) => {
-    const checkStmt = db.prepare(`
-      SELECT COUNT(*) AS count FROM search_history WHERE search_query = ?
-    `);
-    checkStmt.get(searchQuery, (err, row) => {
-      if (err) {
-        console.error('Error checking search query:', err.message);
-        return reject(err);
-      }
-      if (row.count > 0) {
-        console.log('Search query already exists. Not inserting.');
-        return resolve({ success: false, message: 'Query already exists' });
-      }
+  try {
+    const checkStmt = db.prepare('SELECT COUNT(*) AS count FROM search_history WHERE search_query = ?');
+    const row = checkStmt.get(searchQuery);
+    
+    if (row.count > 0) {
+      console.log('Search query already exists. Not inserting.');
+      return { success: false, message: 'Query already exists' };
+    }
 
-      // Insert the new search history entry
-      const insertStmt = db.prepare(`INSERT INTO search_history (search_query) VALUES (?)`);
-      insertStmt.run(searchQuery, function (err) {
-        if (err) {
-          console.error('Error inserting search history entry:', err.message);
-          return reject(err);
-        }
+    // Insert the new search history entry
+    const insertStmt = db.prepare('INSERT INTO search_history (search_query) VALUES (?)');
+    const info = insertStmt.run(searchQuery);
 
-        // Check total number of entries and delete if necessary
-        db.get('SELECT COUNT(*) AS count FROM search_history', (err, row) => {
-          if (err) {
-            console.error('Error counting search history:', err.message);
-            return reject(err);
-          }
-
-          const max_history_entries = 5;
-          if (row.count > max_history_entries) {
-            const deleteStmt = db.prepare(`
-              DELETE FROM search_history
-              WHERE id IN (SELECT id FROM search_history ORDER BY timestamp ASC LIMIT ?)
-            `);
-            deleteStmt.run(row.count - max_history_entries, (err) => {
-              if (err) {
-                console.error('Error deleting oldest search history:', err.message);
-              }
-              resolve({ success: true, id: this.lastID });
-            });
-          } else {
-            resolve({ success: true, id: this.lastID });
-          }
-        });
-      });
-    });
-  });
+    // Check total number of entries and delete if necessary
+    const countStmt = db.prepare('SELECT COUNT(*) AS count FROM search_history');
+    const countRow = countStmt.get();
+    
+    const max_history_entries = 5;
+    if (countRow.count > max_history_entries) {
+      const deleteStmt = db.prepare(`
+        DELETE FROM search_history
+        WHERE id IN (SELECT id FROM search_history ORDER BY timestamp ASC LIMIT ?)
+      `);
+      deleteStmt.run(countRow.count - max_history_entries);
+    }
+    
+    return { success: true, id: info.lastInsertRowid };
+  } catch (err) {
+    console.error('Error managing search history:', err.message);
+    throw err;
+  }
 });
 
 // Get search history
 ipcMain.handle('get-search-history', async () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM search_history ORDER BY timestamp DESC', (err, rows) => {
-      if (err) {
-        console.error('Error fetching search history:', err.message);
-        return reject(err);
-      }
-      resolve(rows);
-    });
-  });
+  try {
+    const stmt = db.prepare('SELECT * FROM search_history ORDER BY timestamp DESC');
+    return stmt.all();
+  } catch (err) {
+    console.error('Error fetching search history:', err.message);
+    throw err;
+  }
 });
 
 // ------------------- Theme Settings ------------------- //
 
 // Get theme setting
 ipcMain.handle('get-theme-setting', async () => {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT themeSet FROM settings WHERE id = 1', (err, row) => {
-      if (err) {
-        console.error('Error fetching theme setting:', err.message);
-        return reject(err);
-      }
-      resolve(row.themeSet);
-    });
-  });
+  try {
+    const stmt = db.prepare('SELECT themeSet FROM settings WHERE id = 1');
+    const row = stmt.get();
+    return row.themeSet;
+  } catch (err) {
+    console.error('Error fetching theme setting:', err.message);
+    throw err;
+  }
 });
 
 // Set theme setting
 ipcMain.handle('set-theme-setting', async (event, theme) => {
-  return new Promise((resolve, reject) => {
-    db.run('UPDATE settings SET themeSet = ? WHERE id = 1', [theme], (err) => {
-      if (err) {
-        console.error('Error updating theme setting:', err.message);
-        return reject(err);
-      }
-      resolve({ success: true });
-    });
-  });
+  try {
+    const stmt = db.prepare('UPDATE settings SET themeSet = ? WHERE id = 1');
+    stmt.run(theme);
+    return { success: true };
+  } catch (err) {
+    console.error('Error updating theme setting:', err.message);
+    throw err;
+  }
 });

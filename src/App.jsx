@@ -8,20 +8,53 @@ export default function App() {
     useEffect(() => {
         // Function to apply the saved theme on page load
         const applySavedTheme = async () => {
-            let savedTheme = localStorage.getItem('theme');  // Check localStorage for saved theme
-            if (!savedTheme) {
-                // If no saved theme, fetch it from the database
-                savedTheme = await window.electron.getTheme();  // Fetch theme from the database
-                localStorage.setItem('theme', savedTheme);  // Save it to localStorage
+            try {
+                // Check if user has manually set a theme preference
+                let userTheme = localStorage.getItem('theme');
+                
+                if (userTheme) {
+                    // User has a saved preference, use it
+                    document.body.classList.toggle('dark', userTheme === 'dark');
+                    await window.electron.setTheme(userTheme); // Sync to database
+                } else {
+                    // No user preference, use auto mode (follow system preference)
+                    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    const systemTheme = systemPrefersDark ? 'dark' : 'light';
+                    
+                    // Apply theme class but DON'T save to localStorage (keep auto mode)
+                    document.body.classList.toggle('dark', systemPrefersDark);
+                    await window.electron.setTheme(systemTheme);
+                }
+            } catch (error) {
+                console.error('Error applying theme:', error);
+                // Fallback to system preference
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.body.classList.toggle('dark', systemPrefersDark);
             }
-            document.body.classList.toggle('dark', savedTheme === 'dark');  // Apply the theme
         };
 
+        // Listen for system theme changes (only if user hasn't set a manual preference)
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleSystemThemeChange = (e) => {
+            const userTheme = localStorage.getItem('theme');
+            // Only apply system theme if user hasn't set a manual preference
+            if (!userTheme) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                document.body.classList.toggle('dark', e.matches);
+                window.electron.setTheme(newTheme).catch(console.error);
+            }
+        };
+
+        mediaQuery.addEventListener('change', handleSystemThemeChange);
         applySavedTheme();
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleSystemThemeChange);
+        };
     }, []);
 
     return (
-        <div className='bg-lm-background text-lm-text h-screen dark:bg-dm-background dark:text-dm-text transition-all duration-300 ease-in-out overflow-hidden'>
+        <div className='bg-background text-text h-screen transition-all duration-300 ease-in-out overflow-hidden'>
             <Titlebar />
             <DashContainer />
             <AddCompPopup />
