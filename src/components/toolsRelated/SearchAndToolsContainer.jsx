@@ -53,7 +53,7 @@ export default function SearchAndToolsContainer({ selectedComponent, onSearchRes
             </div>
 
             {/* 4x4 Grid Layout */}
-            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-4 max-w-screen-lg w-full">
+            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-4 max-w-5xl w-full">
                 <SearchBar onSearchResults={handleSearchResults} />
                 <RecentTags onTagClick={handleTagClick} />
                 <Tools selectedComponent={selectedComponent} />

@@ -122,19 +122,19 @@ const CodeSpaceContainer = ({ component }) => {
   if (!component || !component.languages) {
     return (
       <div className="flex h-full">
-        <div className="w-3/12 bg-lm-foreground dark:bg-dm-foreground rounded-default p-2 shadow-inner mr-2">
-          <div className='flex justify-center items-center w-full h-full text-gray-400 dark:text-gray-500 opacity-50'>
-            <LogoStamp width={230} height={150}/>
+        <div className="w-3/12 bg-foreground rounded-default p-2 shadow-inner mr-2">
+          <div className='flex justify-center items-center w-full h-full'>
+            <LogoStamp width={300} height={150}/>
           </div>
         </div>
-        <div className="w-9/12 bg-lm-foreground dark:bg-dm-foreground flex flex-col rounded-default h-full shadow-inner">
-          <div className="flex-1 border-b border-lm-background dark:border-dm-background rounded-t-default p-2">
-            <div className='flex justify-center items-center w-full h-full text-gray-400 dark:text-gray-500'>
+        <div className="w-9/12 bg-foreground flex flex-col rounded-default h-full shadow-inner">
+          <div className="flex-1 border-b border-background rounded-t-default p-2">
+            <div className='flex justify-center items-center w-full h-full text-accent/80'>
               <Fullscreen size={70} />
             </div>
           </div>
           <div className="flex-1 rounded-b-default p-2">
-            <div className='flex justify-center items-center w-full h-full text-gray-400 dark:text-gray-500'>
+            <div className='flex justify-center items-center w-full h-full text-accent/80'>
               <Code size={70} />
             </div>
           </div>
@@ -148,8 +148,8 @@ const CodeSpaceContainer = ({ component }) => {
 
   return (
     <div className="flex h-full">
-      <div className="w-3/12 bg-lm-foreground dark:bg-dm-foreground rounded-default p-2 shadow-inner mr-2">
-        <div className="text-left text-lg font-medium bg-lm-background dark:bg-dm-background rounded-default p-2 shadow-lg">
+      <div className="w-3/12 bg-foreground rounded-default p-2 shadow-inner mr-2">
+        <div className="text-left text-lg font-medium bg-background rounded-default p-2 shadow-lg">
           {/* Component details area */}
           <h2 className='px-2 text-sm font-medium'>Component Details</h2>
         </div>
@@ -158,7 +158,7 @@ const CodeSpaceContainer = ({ component }) => {
         <h3 className='p-2 text-sm font-medium'>Tags -</h3>
         <div className="flex flex-wrap justify-start gap-2">
           {component.tags.map((tag, index) => (
-            <button key={index} className="text-xs font-medium bg-lm-background dark:bg-dm-background ml-2 px-2 py-1 rounded-default shadow-lg hover:outline hover:outline-lm-accent dark:hover:outline-dm-accent text-lm-text dark:text-dm-text space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-lm-accent transition-all duration-100 ease-in-out">
+            <button key={index} className="text-xs font-medium bg-background ml-2 px-2 py-1 rounded-default shadow-lg hover:outline hover:outline-accent text-text space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out">
               {tag}
             </button>
           ))}
@@ -166,20 +166,20 @@ const CodeSpaceContainer = ({ component }) => {
         <h3 className='p-2 text-sm font-medium'>Languages -</h3>
         <div className="flex flex-wrap gap-2">
           {component.languages.map((language, index) => (
-            <div key={index} className="flex items-center justify-center bg-lm-background dark:bg-dm-background text-xs font-medium ml-2 px-2 py-1 rounded-default shadow-lg hover:outline hover:outline-lm-accent dark:hover:outline-dm-accent text-lm-text dark:text-dm-text space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-lm-accent transition-all duration-100 ease-in-out">
+            <div key={index} className="flex items-center justify-center bg-background text-xs font-medium ml-2 px-2 py-1 rounded-default shadow-lg hover:outline hover:outline-accent text-text space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out">
               <span>{language}</span>
               {allIconsAvailable && languageToIconClassMap[language.toLowerCase()] && (
-                <i className={`${languageToIconClassMap[language.toLowerCase()]} devicon-plain text-lm-text dark:text-dm-text text-md ml-2`} title={language}></i>
+                <i className={`${languageToIconClassMap[language.toLowerCase()]} devicon-plain text-text text-md ml-2`} title={language}></i>
               )}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="w-9/12 bg-lm-foreground dark:bg-dm-foreground flex flex-col rounded-default h-full shadow-inner">
+      <div className="w-9/12 bg-foreground flex flex-col rounded-default h-full shadow-inner">
       {/* Component Output area (Only appears if output is available) */}
-        <div className={`flex-1 border-b border-lm-background dark:border-dm-background rounded-t-default p-2 ${isResultsVisible ? '' : 'hidden'}`}>
-          <div className="text-left text-lg font-medium bg-lm-background dark:bg-dm-background rounded-default p-2 shadow-lg">
+        <div className={`flex-1 border-b border-background rounded-t-default p-2 ${isResultsVisible ? '' : 'hidden'}`}>
+          <div className="text-left text-lg font-medium bg-background rounded-default p-2 shadow-lg">
             <h2 className='px-2 text-sm font-medium'>Results / Output for {component.name}</h2>
           </div>
           <div className="h-full">
@@ -195,8 +195,8 @@ const CodeSpaceContainer = ({ component }) => {
           </div>
         </div>
         {!isResultsVisible && (
-          <div className='py-2 border-b border-lm-background dark:border-dm-background'>
-            <div className="text-left text-lg font-medium bg-lm-background dark:bg-dm-background rounded-default p-2 mx-2 shadow-lg">
+          <div className='py-2 border-b border-background'>
+            <div className="text-left text-lg font-medium bg-background rounded-default p-2 mx-2 shadow-lg">
               <h2 className='px-2 text-sm font-medium'>No available output for {component.name}</h2>
             </div>
           </div>
@@ -205,17 +205,17 @@ const CodeSpaceContainer = ({ component }) => {
         <div className="flex-1 rounded-b-default p-2 h-full">
           <div className='flex gap-2 w-full'>
             {/* Component code area (containing all code inputted for the selected component) */}
-            <div className="flex-grow text-left text-lg font-medium bg-lm-background dark:bg-dm-background rounded-default p-2 shadow-lg">
+            <div className="grow text-left text-lg font-medium bg-background rounded-default p-2 shadow-lg">
               <h2 className='px-2 text-sm font-medium'>Code for {component.name}</h2>
             </div>
-            <div className="flex-shrink-0 w-auto flex items-center justify-center bg-lm-background dark:bg-dm-background rounded-default p-2 shadow-lg">
+            <div className="shrink-0 w-auto flex items-center justify-center bg-background rounded-default p-2 shadow-lg">
               <div className="flex items-center">
                 <span className='text-sm font-medium px-1'>Languages - </span>
                 {allIconsAvailable ? (
                   component.languages.map((language, index) => {
                     const iconClass = languageToIconClassMap[language.toLowerCase()];
                     return iconClass ? (
-                      <i key={index} className={`${iconClass} devicon-plain text-lm-text dark:text-dm-text group-hover:text-lm-accent dark:group-hover:text-dm-accent px-1 text-md`} title={language}></i>
+                      <i key={index} className={`${iconClass} devicon-plain text-text group-hover:text-accent px-1 text-md`} title={language}></i>
                     ) : null;
                   })
                 ) : (

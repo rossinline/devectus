@@ -233,18 +233,18 @@ const AddCompForm = ({ onComponentAdded }) => {
     <div className="p-4">
       <form onSubmit={addComponent} className="space-y-4">
         <div className="flex flex-col mb-4">
-          <label htmlFor="name" className="text-sm font-medium text-lm-text dark:text-dm-text mb-1">Name</label>
+          <label htmlFor="name" className="text-sm font-medium text-text mb-1">Name</label>
           <input
             type="text"
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter Component name"
-            className="py-1 px-2 rounded-default bg-lm-foreground dark:bg-dm-foreground text-lm-text dark:text-dm-text focus:outline-none focus:ring-2 focus:ring-lm-accent"
+            className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label htmlFor="tags" className="text-sm font-medium text-lm-text dark:text-dm-text mb-1">Tags</label>
+          <label htmlFor="tags" className="text-sm font-medium text-text mb-1">Tags</label>
           <CreatableSelect
             isMulti
             name="tags"
@@ -258,7 +258,7 @@ const AddCompForm = ({ onComponentAdded }) => {
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label htmlFor="languages" className="text-sm font-medium text-lm-text dark:text-dm-text mb-1">Languages</label>
+          <label htmlFor="languages" className="text-sm font-medium text-text mb-1">Languages</label>
           <CreatableSelect
             isMulti
             closeMenuOnSelect={false}
@@ -284,7 +284,7 @@ const AddCompForm = ({ onComponentAdded }) => {
         </div>
         {languages.map((lang, index) => (
           <div className="flex flex-col mb-4" key={index}>
-            <label htmlFor={`code${index}`} className="text-sm font-medium text-lm-text dark:text-dm-text mb-1">
+            <label htmlFor={`code${index}`} className="text-sm font-medium text-text mb-1">
               {`Code for ${lang.label}`}
             </label>
             <textarea
@@ -296,7 +296,7 @@ const AddCompForm = ({ onComponentAdded }) => {
                 setCodes(newCodes);
               }}
               placeholder={`Enter code for ${lang.label}`}
-              className="py-1 px-2 rounded-default bg-lm-foreground dark:bg-dm-foreground text-lm-text dark:text-dm-text focus:outline-none focus:ring-2 focus:ring-lm-accent"
+              className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
               rows={7}
             />
           </div>
@@ -304,7 +304,7 @@ const AddCompForm = ({ onComponentAdded }) => {
         <div className="flex justify-center items-center">
           <button
             type="submit"
-            className="flex items-center px-4 py-2 bg-lm-foreground dark:bg-dm-foreground hover:outline hover:outline-lm-accent dark:hover:outline-dm-accent text-lm-text dark:text-dm-text hover:text-lm-accent rounded-default space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-lm-accent transition-all duration-100 ease-in-out"
+            className="flex items-center px-4 py-2 bg-foreground hover:outline hover:outline-accent text-text hover:text-accent rounded-default space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out"
           >
             <SquarePlus className="mr-2" size={18} />
             <span>Add Component</span>

@@ -5,7 +5,7 @@ import ComponentAddForm from './addingComponents/AddCompForm.jsx';
 import AddCompPopup from './addingComponents/AddCompPopup.jsx';
 import EditCompForm from './editingComponents/EditCompForm.jsx';
 import EditCompPopup from './editingComponents/EditCompPopup.jsx';
-import DeleteCompPopup from './deleteComponents/DeleteCompPopup.jsx';  // Import the new component
+import DeleteCompPopup from './deleteComponents/DeleteCompPopup.jsx';
 
 const Tools = ({ selectedComponent }) => {
   const [isAddCompPopupOpen, setIsAddCompPopupOpen] = useState(false);
@@ -64,21 +64,19 @@ const Tools = ({ selectedComponent }) => {
 
   return (
     <div>
-      <h2 className="text-sm font-medium text-lm-text dark:text-dm-text mb-1">Tools</h2>
-      <div className="max-w-4xl mx-auto px-2">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+      <h2 className="text-sm font-semibold text-text mb-1">Tools</h2>
+      <div className="max-w-3xl flex flex-row justify-between items-center">
           {ToolsSetup.map((widget, index) => (
             <button
               key={index}
-              className="group flex flex-col items-center justify-center bg-lm-foreground dark:bg-dm-foreground hover:outline hover:outline-lm-accent dark:hover:outline-dm-accent text-lm-text dark:text-dm-text dark:hover:text-dm-accent rounded-default px-6 py-2 space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-lm-accent transition-all duration-100 ease-in-out"
+              className="group flex flex-col w-12 items-center justify-center bg-foreground hover:outline hover:outline-accent text-text hover:text-accent rounded-default cursor-pointer focus:outline-2 focus:outline-accent transition-all duration-100 ease-in-out"
               aria-label={widget.label}
               onClick={widget.onClick}
             >
-              <div className="group-hover:animate-wiggle">{widget.icon}</div>
-              <span className="text-xs font-medium hidden lg:block">{widget.label}</span>
+              <div className="group-hover:animate-wiggle px-4 py-2">{widget.icon}</div>
+              <span className="w-full bg-accent text-foreground px-1 py-0.5 text-xs font-bold hidden lg:block rounded-b-default group-hover:text-background">{widget.label}</span>
             </button>
           ))}
-        </div>
       </div>
 
       <AddCompPopup isOpen={isAddCompPopupOpen} onClose={closeAddCompPopup}>
