@@ -12,8 +12,8 @@ export default function LanguagesInDirTags({ onLanguageClick }) {
         const uniqueLanguages = Array.from(
           new Set(allComponents.flatMap(component => component.languages))
         );
-        // Truncate the list to 10 languages
-        setLanguages(uniqueLanguages.slice(0, 5));
+        // Truncate the list to 15 languages
+        setLanguages(uniqueLanguages.slice(0, 15));
       } catch (error) {
         console.error('Error fetching languages:', error);
       }
@@ -23,7 +23,7 @@ export default function LanguagesInDirTags({ onLanguageClick }) {
   }, []);
 
   return (
-    <div className="max-w-md">
+    <div className="max-w-md row-span-2">
       {/* Title */}
       <h2 className="text-sm font-semibold text-text mb-1">Languages</h2>
       
