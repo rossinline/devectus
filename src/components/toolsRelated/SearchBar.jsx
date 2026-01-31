@@ -37,7 +37,7 @@ export default function SearchBar({ onSearchResults }) {
   };
 
   return (
-    <div className="max-w-md">
+    <div>
       {/* Title */}
       <h2 className="text-sm font-semibold text-text mb-1">Search</h2>
       

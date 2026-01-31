@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pin, Folder, PencilLine, Tag, Code, FolderX } from 'lucide-react';
 import PinnedBoxComponents from './PinnedBoxComponents.jsx';
 import ComponentBox from './ComponentsBox.jsx';
+import SearchBar from '../toolsrelated/SearchBar.jsx';
 
 const ComponentsContainer = ({ onComponentClick, searchResults }) => {
   const [components, setComponents] = useState([]);
@@ -53,10 +54,20 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
   const pinnedComponents = displayedComponents.filter(component => component.isPinned);
   const unpinnedComponents = displayedComponents.filter(component => !component.isPinned);
 
+  // Handle search results
+  const handleSearchResults = (results) => {
+    setDisplayedComponents(results.length > 0 ? results : components);
+  };
+
   return (
-    <div className="w-full my-4 bg-foreground rounded-default shadow-inner scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground h-[56.82vh] overflow-hidden hover:overflow-y-auto">
+    <div className="w-full flex flex-col h-full">
+      {/* Search Bar */}
+      <div className="mb-2">
+        <SearchBar onSearchResults={handleSearchResults} />
+      </div>
+      <div className="flex-1 bg-foreground rounded-default shadow-inner scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable overflow-hidden hover:overflow-y-auto">
       {/* Total number of snippets */}
-      <div className="flex flex-col items-center justify-center py-3 mb-1">
+      <div className="flex flex-col items-center justify-center py-3 mb-1 pl-2.5">
         <h2 className="text-sm font-medium text-muted">
           Total Components: {components.length}
         </h2>
@@ -153,6 +164,7 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
           </div>
         </>
       )}
+      </div>
       </div>
     </div>
   );

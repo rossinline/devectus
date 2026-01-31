@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import 'devicon/devicon.min.css';
 import Titlebar from './components/TitleBar.jsx';
 import DashContainer from './components/DashContainer.jsx';
-import AddCompPopup from './components/toolsrelated/addingComponents/AddCompPopup.jsx';
+import AddCompPopup from './components/toolsRelated/addingComponents/AddCompPopup.jsx';
 
 export default function App() {
     useEffect(() => {
