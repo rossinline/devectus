@@ -91,10 +91,15 @@ const CodeSpaceContainer = ({ component }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       const newSrcDoc = `
+      <!DOCTYPE html>
       <html>
-        <body>${code.html || ''}</body>
-        <style>${code.css || ''}</style>
-        <script>${code.javascript || ''}</script>
+        <head>
+          <style>${code.css || ''}</style>
+        </head>
+        <body>
+          ${code.html || ''}
+          <script>${code.javascript || ''}</script>
+        </body>
       </html>`;
 
       setSrcDoc(newSrcDoc);
@@ -187,10 +192,10 @@ const CodeSpaceContainer = ({ component }) => {
             <iframe
               srcDoc={srcDoc}
               title="output"
-              sandbox="allow-scripts"
-              frameBorder="0"
+              sandbox="allow-scripts allow-same-origin"
               width="100%"
               height="100%"
+              className=""
             />
           </div>
         </div>
