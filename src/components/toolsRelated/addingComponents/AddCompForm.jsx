@@ -1,68 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { SquarePlus } from 'lucide-react';
 import CreatableSelect from 'react-select/creatable';
+import { Controlled as CodeMirror } from 'react-codemirror2';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
+import 'codemirror/theme/eclipse.css';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/python/python';
+import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/css/css';
+import 'codemirror/mode/markdown/markdown';
+import 'codemirror/mode/shell/shell';
+import 'codemirror/mode/php/php';
+import 'codemirror/mode/ruby/ruby';
+import 'codemirror/mode/clike/clike';
+import 'codemirror/mode/go/go';
+import 'codemirror/mode/sql/sql';
+import 'codemirror/mode/vue/vue';
+import 'codemirror/mode/jsx/jsx';
+import languageOptions from '../../../data/languageOptions';
+  // Map language value to CodeMirror mode
+  const getCodeMirrorMode = (langValue) => {
+    switch (langValue) {
+      case 'javascript':
+      case 'nodejs':
+      case 'react':
+      case 'vuejs':
+      case 'angularjs':
+      case 'webpack':
+      case 'babel':
+      case 'gulp':
+      case 'grunt':
+        return 'javascript';
+      case 'typescript':
+        return 'text/typescript';
+      case 'python':
+      case 'django':
+      case 'flask':
+        return 'python';
+      case 'java':
+      case 'spring':
+        return 'text/x-java';
+      case 'csharp':
+        return 'text/x-csharp';
+      case 'cpp':
+        return 'text/x-c++src';
+      case 'go':
+        return 'go';
+      case 'ruby':
+      case 'rails':
+        return 'ruby';
+      case 'php':
+        return 'php';
+      case 'html':
+        return 'xml';
+      case 'css':
+      case 'sass':
+      case 'less':
+        return 'css';
+      case 'shell':
+        return 'shell';
+      case 'mysql':
+      case 'postgresql':
+      case 'mongodb':
+        return 'sql';
+      case 'markdown':
+        return 'markdown';
+      case 'xml':
+        return 'xml';
+      default:
+        return 'javascript';
+    }
+  };
 
-// Language Options Map
-const languageOptions = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'html', label: 'HTML' },
-  { value: 'css', label: 'CSS' },
-  { value: 'ruby', label: 'Ruby' },
-  { value: 'php', label: 'PHP' },
-  { value: 'swift', label: 'Swift' },
-  { value: 'csharp', label: 'C#' },
-  { value: 'cpp', label: 'C++' },
-  { value: 'go', label: 'Go' },
-  { value: 'rust', label: 'Rust' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'kotlin', label: 'Kotlin' },
-  { value: 'scala', label: 'Scala' },
-  { value: 'perl', label: 'Perl' },
-  { value: 'shell', label: 'Shell' },
-  { value: 'docker', label: 'Docker' },
-  { value: 'mysql', label: 'MySQL' },
-  { value: 'postgresql', label: 'PostgreSQL' },
-  { value: 'mongodb', label: 'MongoDB' },
-  { value: 'nodejs', label: 'Node.js' },
-  { value: 'angularjs', label: 'AngularJS' },
-  { value: 'react', label: 'React' },
-  { value: 'vuejs', label: 'Vue.js' },
-  { value: 'laravel', label: 'Laravel' },
-  { value: 'django', label: 'Django' },
-  { value: 'flask', label: 'Flask' },
-  { value: 'spring', label: 'Spring' },
-  { value: 'express', label: 'Express' },
-  { value: 'rails', label: 'Rails' },
-  { value: 'sass', label: 'Sass' },
-  { value: 'less', label: 'Less' },
-  { value: 'webpack', label: 'Webpack' },
-  { value: 'babel', label: 'Babel' },
-  { value: 'gulp', label: 'Gulp' },
-  { value: 'grunt', label: 'Grunt' },
-  { value: 'jenkins', label: 'Jenkins' },
-  { value: 'git', label: 'Git' },
-  { value: 'github', label: 'GitHub' },
-  { value: 'gitlab', label: 'GitLab' },
-  { value: 'vscode', label: 'Visual Studio Code' },
-  { value: 'intellij', label: 'IntelliJ IDEA' },
-  { value: 'atom', label: 'Atom' },
-  { value: 'sublime', label: 'Sublime Text' },
-  { value: 'emacs', label: 'Emacs' },
-  { value: 'vim', label: 'Vim' },
-  { value: 'linux', label: 'Linux' },
-  { value: 'ubuntu', label: 'Ubuntu' },
-  { value: 'windows', label: 'Windows' },
-  { value: 'apple', label: 'Apple' },
-  { value: 'android', label: 'Android' },
-  { value: 'raspberry_pi', label: 'Raspberry Pi' },
-  { value: 'aws', label: 'AWS' },
-  { value: 'heroku', label: 'Heroku' },
-  { value: 'nginx', label: 'Nginx' },
-  { value: 'apache', label: 'Apache' },
-  // Add more
-];
 
 // Manual styling for react-tag-input dark-mode
 const darkModeStyles = {
@@ -233,23 +243,23 @@ const AddCompForm = ({ onComponentAdded }) => {
     <div className="p-4">
       <form onSubmit={addComponent} className="space-y-4">
         <div className="flex flex-col mb-4">
-          <label htmlFor="name" className="text-sm font-medium text-text mb-1">Name</label>
+          <label htmlFor="name" className="text-sm font-semibold text-text mb-1">Name</label>
           <input
             type="text"
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter Component name"
-            className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
+            className="p-2 rounded-default bg-foreground text-text text-sm focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label htmlFor="tags" className="text-sm font-medium text-text mb-1">Tags</label>
+          <label htmlFor="tags" className="text-sm font-semibold text-text mb-1">Tags</label>
           <CreatableSelect
             isMulti
             name="tags"
             styles={selectStyles}
-            className="basic-multi-select"
+            className="basic-multi-select text-sm"
             classNamePrefix="Create Tags"
             value={tags}
             onChange={setTags}
@@ -258,14 +268,14 @@ const AddCompForm = ({ onComponentAdded }) => {
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label htmlFor="languages" className="text-sm font-medium text-text mb-1">Languages</label>
+          <label htmlFor="languages" className="text-sm font-semibold text-text mb-1">Languages</label>
           <CreatableSelect
             isMulti
             closeMenuOnSelect={false}
             name="languages"
             options={languageOptions}
             styles={selectStyles}
-            className="basic-multi-select"
+            className="basic-multi-select text-sm"
             classNamePrefix="select"
             value={languages}
             onChange={(selectedOptions) => {
@@ -284,30 +294,35 @@ const AddCompForm = ({ onComponentAdded }) => {
         </div>
         {languages.map((lang, index) => (
           <div className="flex flex-col mb-4" key={index}>
-            <label htmlFor={`code${index}`} className="text-sm font-medium text-text mb-1">
+            <label htmlFor={`code${index}`} className="text-sm font-semibold text-text mb-1">
               {`Code for ${lang.label}`}
             </label>
-            <textarea
-              id={`code${index}`}
+            <CodeMirror
               value={codes[index]}
-              onChange={(e) => {
+              options={{
+                mode: getCodeMirrorMode(lang.value),
+                theme: dark ? 'material' : 'eclipse',
+                lineNumbers: true,
+                tabSize: 2,
+                indentWithTabs: false,
+                autofocus: false,
+              }}
+              onBeforeChange={(_editor, _data, value) => {
                 const newCodes = [...codes];
-                newCodes[index] = e.target.value;
+                newCodes[index] = value;
                 setCodes(newCodes);
               }}
-              placeholder={`Enter code for ${lang.label}`}
-              className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
-              rows={7}
+              className="rounded-default border border-border scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable"
             />
           </div>
         ))}
         <div className="flex justify-center items-center">
           <button
             type="submit"
-            className="flex items-center px-4 py-2 bg-foreground hover:outline hover:outline-accent text-text hover:text-accent rounded-default space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out"
+            className="flex items-center justify-center px-4 py-2 bg-foreground hover:outline hover:outline-accent text-text hover:text-accent rounded-default space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out"
           >
             <SquarePlus className="mr-2" size={18} />
-            <span>Add Component</span>
+            Add Component
           </button>
         </div>
       </form>

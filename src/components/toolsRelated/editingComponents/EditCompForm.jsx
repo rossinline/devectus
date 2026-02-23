@@ -1,67 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import CreatableSelect from 'react-select/creatable';
+import { Controlled as CodeMirror } from 'react-codemirror2';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
+import 'codemirror/theme/eclipse.css';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/python/python';
+import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/css/css';
+import 'codemirror/mode/markdown/markdown';
+import 'codemirror/mode/shell/shell';
+import 'codemirror/mode/php/php';
+import 'codemirror/mode/ruby/ruby';
+import 'codemirror/mode/clike/clike';
+import 'codemirror/mode/go/go';
+import 'codemirror/mode/sql/sql';
+import 'codemirror/mode/vue/vue';
+import 'codemirror/mode/jsx/jsx';
+import languageOptions from '../../../data/languageOptions';
 
-const languageOptions = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'html', label: 'HTML' },
-  { value: 'css', label: 'CSS' },
-  { value: 'ruby', label: 'Ruby' },
-  { value: 'php', label: 'PHP' },
-  { value: 'swift', label: 'Swift' },
-  { value: 'csharp', label: 'C#' },
-  { value: 'cpp', label: 'C++' },
-  { value: 'go', label: 'Go' },
-  { value: 'rust', label: 'Rust' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'kotlin', label: 'Kotlin' },
-  { value: 'scala', label: 'Scala' },
-  { value: 'perl', label: 'Perl' },
-  { value: 'shell', label: 'Shell' },
-  { value: 'docker', label: 'Docker' },
-  { value: 'mysql', label: 'MySQL' },
-  { value: 'postgresql', label: 'PostgreSQL' },
-  { value: 'mongodb', label: 'MongoDB' },
-  { value: 'nodejs', label: 'Node.js' },
-  { value: 'angularjs', label: 'AngularJS' },
-  { value: 'react', label: 'React' },
-  { value: 'vuejs', label: 'Vue.js' },
-  { value: 'laravel', label: 'Laravel' },
-  { value: 'django', label: 'Django' },
-  { value: 'flask', label: 'Flask' },
-  { value: 'spring', label: 'Spring' },
-  { value: 'express', label: 'Express' },
-  { value: 'rails', label: 'Rails' },
-  { value: 'sass', label: 'Sass' },
-  { value: 'less', label: 'Less' },
-  { value: 'webpack', label: 'Webpack' },
-  { value: 'babel', label: 'Babel' },
-  { value: 'gulp', label: 'Gulp' },
-  { value: 'grunt', label: 'Grunt' },
-  { value: 'jenkins', label: 'Jenkins' },
-  { value: 'git', label: 'Git' },
-  { value: 'github', label: 'GitHub' },
-  { value: 'gitlab', label: 'GitLab' },
-  { value: 'vscode', label: 'Visual Studio Code' },
-  { value: 'intellij', label: 'IntelliJ IDEA' },
-  { value: 'atom', label: 'Atom' },
-  { value: 'sublime', label: 'Sublime Text' },
-  { value: 'emacs', label: 'Emacs' },
-  { value: 'vim', label: 'Vim' },
-  { value: 'linux', label: 'Linux' },
-  { value: 'ubuntu', label: 'Ubuntu' },
-  { value: 'windows', label: 'Windows' },
-  { value: 'apple', label: 'Apple' },
-  { value: 'android', label: 'Android' },
-  { value: 'raspberry_pi', label: 'Raspberry Pi' },
-  { value: 'aws', label: 'AWS' },
-  { value: 'heroku', label: 'Heroku' },
-  { value: 'nginx', label: 'Nginx' },
-  { value: 'apache', label: 'Apache' },
-  //Add more
-];
 
 const EditCompForm = ({ component, onClose }) => {
   const [name, setName] = useState('');
@@ -245,23 +203,76 @@ const EditCompForm = ({ component, onClose }) => {
     onClose();
   };
 
-  const languageLabels = languages.map(lang => lang.label);
+
+  // Map language value to CodeMirror mode
+  const getCodeMirrorMode = (langValue) => {
+    switch (langValue) {
+      case 'javascript':
+      case 'nodejs':
+      case 'react':
+      case 'vuejs':
+      case 'angularjs':
+      case 'webpack':
+      case 'babel':
+      case 'gulp':
+      case 'grunt':
+        return 'javascript';
+      case 'typescript':
+        return 'text/typescript';
+      case 'python':
+      case 'django':
+      case 'flask':
+        return 'python';
+      case 'java':
+      case 'spring':
+        return 'text/x-java';
+      case 'csharp':
+        return 'text/x-csharp';
+      case 'cpp':
+        return 'text/x-c++src';
+      case 'go':
+        return 'go';
+      case 'ruby':
+      case 'rails':
+        return 'ruby';
+      case 'php':
+        return 'php';
+      case 'html':
+        return 'xml';
+      case 'css':
+      case 'sass':
+      case 'less':
+        return 'css';
+      case 'shell':
+        return 'shell';
+      case 'mysql':
+      case 'postgresql':
+      case 'mongodb':
+        return 'sql';
+      case 'markdown':
+        return 'markdown';
+      case 'xml':
+        return 'xml';
+      default:
+        return 'javascript';
+    }
+  };
 
   return (
     <div className="p-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col mb-4">
-          <label className="text-sm font-medium text-text mb-1">Name</label>
+          <label className="text-sm font-semibold text-text mb-1">Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter Component name"
-            className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
+            className="p-2 rounded-default bg-foreground text-text text-sm focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label className="text-sm font-medium text-text mb-1">Tags</label>
+          <label className="text-sm font-semibold text-text mb-1">Tags</label>
           <CreatableSelect
             isMulti
             styles={selectStyles}
@@ -272,7 +283,7 @@ const EditCompForm = ({ component, onClose }) => {
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label className="text-sm font-medium text-text mb-1">Languages</label>
+          <label className="text-sm font-semibold text-text mb-1">Languages</label>
           <CreatableSelect
             isMulti
             closeMenuOnSelect={false}
@@ -286,42 +297,60 @@ const EditCompForm = ({ component, onClose }) => {
         </div>
         <div className="flex flex-col mb-4">
           {/* 3 possible code inputs depending on language count of component*/}
-          <label className="text-sm font-medium text-text mb-1">Code</label>
+          <label className="text-sm font-semibold text-text mb-1">Code</label>
           {languages.length > 0 && (
             <>
               {languages[0] && (
                 <div className="flex flex-col mb-4">
-                  <label className="text-sm font-medium text-text mb-1">{languages[0].label}</label>
-                  <textarea
+                  <label className="text-sm text-text mb-1">{languages[0].label}</label>
+                  <CodeMirror
                     value={code1}
-                    onChange={(e) => setCode1(e.target.value)}
-                    placeholder={`Enter code for ${languages[0].label}`}
-                    className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
-                    rows={7}
+                    options={{
+                      mode: getCodeMirrorMode(languages[0].value),
+                      theme: dark ? 'material' : 'eclipse',
+                      lineNumbers: true,
+                      tabSize: 2,
+                      indentWithTabs: false,
+                      autofocus: false,
+                    }}
+                    onBeforeChange={(_editor, _data, value) => setCode1(value)}
+                    className="rounded-default border border-border scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable"
                   />
                 </div>
               )}
               {languages.length > 1 && (
                 <div className="flex flex-col mb-4">
-                  <label className="text-sm font-medium text-text mb-1">{languages[1].label}</label>
-                  <textarea
+                  <label className="text-sm text-text mb-1">{languages[1].label}</label>
+                  <CodeMirror
                     value={code2}
-                    onChange={(e) => setCode2(e.target.value)}
-                    placeholder={`Enter code for ${languages[1].label}`}
-                    className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
-                    rows={7}
+                    options={{
+                      mode: getCodeMirrorMode(languages[1].value),
+                      theme: dark ? 'material' : 'eclipse',
+                      lineNumbers: true,
+                      tabSize: 2,
+                      indentWithTabs: false,
+                      autofocus: false,
+                    }}
+                    onBeforeChange={(_editor, _data, value) => setCode2(value)}
+                    className="rounded-default border border-border scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable"
                   />
                 </div>
               )}
               {languages.length > 2 && (
                 <div className="flex flex-col mb-4">
-                  <label className="text-sm font-medium text-text mb-1">{languages[2].label}</label>
-                  <textarea
+                  <label className="text-sm font-semibold text-text mb-1">{languages[2].label}</label>
+                  <CodeMirror
                     value={code3}
-                    onChange={(e) => setCode3(e.target.value)}
-                    placeholder={`Enter code for ${languages[2].label}`}
-                    className="py-1 px-2 rounded-default bg-foreground text-text focus:outline-none focus:ring-2 focus:ring-accent"
-                    rows={7}
+                    options={{
+                      mode: getCodeMirrorMode(languages[2].value),
+                      theme: dark ? 'material' : 'eclipse',
+                      lineNumbers: true,
+                      tabSize: 2,
+                      indentWithTabs: false,
+                      autofocus: false,
+                    }}
+                    onBeforeChange={(_editor, _data, value) => setCode3(value)}
+                    className="rounded-default border border-border scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable"
                   />
                 </div>
               )}
@@ -331,10 +360,10 @@ const EditCompForm = ({ component, onClose }) => {
         <div className="flex justify-center items-center">
           <button
             type="submit"
-            className="flex items-center px-4 py-2 bg-foreground hover:outline hover:outline-accent text-text hover:text-accent rounded-default space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out"
+            className="flex items-center px-4 py-2 bg-foreground hover:outline hover:outline-accent text-text hover:text-accent rounded-default space-x-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-100 ease-in-out"
           >
             <Pencil className="mr-2" size={18} />
-            <span>Update Component</span>
+            Update Component
           </button>
         </div>
       </form>
