@@ -27,7 +27,7 @@ export default function RecentTags({ onTagClick }) {
   return (
     <div className="max-w-md">
       {/* Title */}
-      <h2 className="text-sm font-medium text-lm-text dark:text-dm-text mb-1">Recent Tags</h2>
+      <h2 className="text-sm font-semibold text-text mb-1">Recent Tags</h2>
 
       {/* Tag Container */}
       <div className="flex flex-wrap gap-2">
@@ -35,7 +35,7 @@ export default function RecentTags({ onTagClick }) {
           <span
             key={index}
             onClick={() => onTagClick(tag)}
-            className="px-3 py-1 text-xs font-medium bg-lm-foreground dark:bg-dm-foreground hover:outline hover:outline-lm-accent dark:hover:outline-dm-accent text-lm-text dark:text-dm-text rounded-default space-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-lm-accent transition-all duration-100 ease-in-out"
+            className="px-3 py-1 text-[10px] shadow-inner font-medium tracking-wide uppercase bg-foreground hover:outline hover:outline-accent text-text rounded-default space-y-1 cursor-pointer focus:outline-2 focus:outline-accent transition-all duration-100 ease-in-out"
           >
             {tag}
           </span>

@@ -10,30 +10,30 @@ const ComponentBox = ({ id, name, tags, languages, onClick, isSelected }) => {
 
   return (
     <div 
-      className={`group flex items-center justify-between p-4 rounded-default shadow-lg cursor-pointer bg-lm-background dark:bg-dm-background hover:text-lm-accent ${isSelected ? 'border-2 border-lm-accent' : ''}`} 
+      className={`group flex items-center justify-between p-4 rounded-default shadow-lg cursor-pointer bg-background hover:text-accent ${isSelected ? 'border-2 border-accent' : ''}`} 
       onClick={onClick}
     >
       {/* Left Side - File Name */}
-      <div className="flex-shrink-0 w-3/12 text-sm font-medium truncate">
+      <div className="shrink-0 w-3/12 text-sm font-medium truncate">
         {name}
       </div>
 
       {/* Center - Tags */}
-      <div className="flex-grow flex justify-center space-x-2">
+      <div className="grow flex justify-center space-x-2">
         {displayedTags.map((tag, index) => (
-          <span key={index} className="text-xs bg-lm-foreground dark:bg-dm-foreground px-2 py-1 rounded-default">
+          <span key={index} className="text-xs bg-foreground px-2 py-1 rounded-default">
             {tag}
           </span>
         ))}
       </div>
 
       {/* Right Side - Languages and Icons */}
-      <div className="flex-shrink-0 w-3/12 flex items-center space-x-2 justify-end">
+      <div className="shrink-0 w-3/12 flex items-center space-x-2 justify-end">
         {allIconsAvailable ? (
           languages.map((language, index) => {
             const iconClass = languageToIconClassMap[language.toLowerCase()];
             return iconClass ? (
-              <i key={index} className={`${iconClass} devicon-plain text-lg text-lm-text dark:text-dm-text group-hover:text-lm-accent dark:group-hover:text-lm-accent`} title={language}></i>
+              <i key={index} className={`${iconClass} devicon-plain text-lg text-text group-hover:text-accent`} title={language}></i>
             ) : null;
           })
         ) : (

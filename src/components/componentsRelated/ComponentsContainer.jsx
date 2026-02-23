@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pin, Folder, PencilLine, Tag, Code, FolderX } from 'lucide-react';
 import PinnedBoxComponents from './PinnedBoxComponents.jsx';
 import ComponentBox from './ComponentsBox.jsx';
+import SearchBar from '../toolsrelated/SearchBar.jsx';
 
 const ComponentsContainer = ({ onComponentClick, searchResults }) => {
   const [components, setComponents] = useState([]);
@@ -53,25 +54,39 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
   const pinnedComponents = displayedComponents.filter(component => component.isPinned);
   const unpinnedComponents = displayedComponents.filter(component => !component.isPinned);
 
+  // Handle search results
+  const handleSearchResults = (results) => {
+    setDisplayedComponents(results.length > 0 ? results : components);
+  };
+
   return (
-    <div className="w-full my-4 p-4 bg-lm-foreground dark:bg-dm-foreground rounded-default shadow-inner scrollbar-thin  scrollbar-thumb-gray-400 scrollbar-track-lm-foreground dark:scrollbar-thumb-gray-500 dark:scrollbar-track-dm-foreground h-[56.82vh] overflow-hidden hover:overflow-y-auto">
+    <div className="w-full flex flex-col h-full">
+      {/* Search Bar */}
+      <div className="mb-2">
+        <SearchBar onSearchResults={handleSearchResults} />
+      </div>
+      <div className="flex-1 bg-foreground rounded-default shadow-inner scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable overflow-hidden hover:overflow-y-auto">
       {/* Total number of snippets */}
-      <div className="mb-4">
-        <h2 className="text-sm font-medium text-gray-400 dark:text-gray-500">
+      <div className="flex flex-col items-center justify-center py-3 mb-1 pl-2.5">
+        <h2 className="text-sm font-medium text-muted">
           Total Components: {components.length}
         </h2>
+        <div className="w-full border-b border-border my-2"></div>
       </div>
+      <div className="px-4 pb-4">
       {displayedComponents.length === 0 ? (
         <div>
-          <div className="flex items-center mb-4">
-            <Pin className="text-lm-text dark:text-dm-text mr-2" size={18} />
-            <h2 className="text-sm font-medium text-lm-text dark:text-dm-text">Pinned Components</h2>
+          <div className="flex flex-col items-center mb-4">
+            <Pin className="text-text mr-2" size={18} />
+            <h2 className="text-sm font-medium text-text">Pinned Components</h2>
+            <div className="w-full border-b border-border my-2"></div>
           </div>
-          <div className="flex items-center mb-4">
-            <Folder className="text-lm-text dark:text-dm-text mr-2" size={18} />
-            <h2 className="text-sm font-medium text-lm-text dark:text-dm-text">Components</h2>
+          <div className="flex flex-col items-center mb-4">
+            <Folder className="text-text mr-2" size={18} />
+            <h2 className="text-sm font-medium text-text">Components</h2>
+            <div className="w-full border-b border-border my-2"></div>
           </div>
-          <div className="flex items-center justify-between mb-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-between mb-2 text-sm text-muted">
             <div className="flex items-center w-3/12">
               <PencilLine className="mr-1" size={16} />
               <span>File Name</span>
@@ -85,7 +100,7 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
               <span>Languages</span>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-center h-52 text-gray-400 dark:text-gray-500">
+          <div className="flex flex-col items-center justify-center h-52 text-muted">
             <FolderX size={70} />
             <p className="text-md text-center">No components</p>
             <p className="text-md text-center">Click "Add" to create a new component</p>
@@ -93,9 +108,12 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
         </div>
       ) : (
         <>
-          <div className="flex items-center mb-4">
-            <Pin className="text-lm-text dark:text-dm-text mr-2" size={18} />
-            <h2 className="text-sm font-medium text-lm-text dark:text-dm-text">Pinned Components</h2>
+          <div className="flex flex-col items-center mb-4">
+            <div className="flex items-center">
+              <Pin className="text-accent mr-2" size={18} />
+              <h2 className="text-sm font-medium text-text">Pinned Components</h2>
+            </div>
+            <div className="w-full border-b border-border my-2"></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             {pinnedComponents.map((component, index) => (
@@ -110,21 +128,24 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
               />
             ))}
           </div>
-          <div className="flex items-center mb-4">
-            <Folder className="text-lm-text dark:text-dm-text mr-2" size={18} />
-            <h2 className="text-sm font-medium text-lm-text dark:text-dm-text">Components</h2>
+          <div className="flex flex-col items-center mb-4">
+            <div className="flex items-center">
+              <Folder className="text-accent mr-2" size={18} />
+              <h2 className="text-sm font-medium text-text">Components</h2>
+            </div>
+            <div className="w-full border-b border-border my-2"></div>
           </div>
-          <div className="flex items-center justify-between mb-2 text-sm text-gray-400 dark:text-gray-500">
+          <div className="flex items-center justify-between mb-2 text-sm text-muted">
             <div className="flex items-center w-3/12">
-              <PencilLine className="mr-1" size={16} />
+              <PencilLine className="mr-2" size={16} />
               <span>File Name</span>
             </div>
             <div className="flex items-center justify-center w-6/12">
-              <Tag className="mr-1" size={16} />
+              <Tag className="mr-2" size={16} />
               <span>Tags</span>
             </div>
             <div className="flex items-center w-3/12 justify-end">
-              <Code className="mr-1" size={16} />
+              <Code className="mr-2" size={16} />
               <span>Languages</span>
             </div>
           </div>
@@ -143,6 +164,8 @@ const ComponentsContainer = ({ onComponentClick, searchResults }) => {
           </div>
         </>
       )}
+      </div>
+      </div>
     </div>
   );
 };

@@ -55,11 +55,11 @@ const Editor = ({ language = '', displayName, value, onChange, isCollapsed, onTo
   const iconClass = languageToIconClassMap[language.toLowerCase()];
   
   return (
-    <div className={`p-2 ${isCollapsed ? 'flex flex-col items-center h-full' : 'flex-grow'}`}>
-      <div className={`flex ${isCollapsed ? 'flex-col items-center h-full w-12 pb-10 pt-4' : 'justify-between'} items-center bg-lm-background dark:bg-dm-background px-2 py-1 rounded-t-[4px] border-b border-lm-foreground dark:border-dm-foreground`}>
+    <div className={`p-2 ${isCollapsed ? 'flex flex-col items-center h-full' : 'grow'}`}>
+      <div className={`flex ${isCollapsed ? 'flex-col items-center h-full w-12 pb-10 pt-4' : 'justify-between'} items-center bg-background px-2 py-1 rounded-t-sm border-b border-foreground`}>
         {iconClass ? (
           // Display the icon if available
-          <i className={`${iconClass} devicon-plain text-lm-text dark:text-dm-text group-hover:text-lm-accent dark:group-hover:text-dm-accent px-1 text-md`} title={language}></i>
+          <i className={`${iconClass} devicon-plain text-text group-hover:text-accent px-1 text-md`} title={language}></i>
         ) : (
           // Fallback to display nothing when icon is not available
           ""
@@ -79,7 +79,7 @@ const Editor = ({ language = '', displayName, value, onChange, isCollapsed, onTo
         <ControlledEditor
           onBeforeChange={handleChange}
           value={value}
-          className='h-full'
+          className='h-full scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable'
           options={{
             lineWrapping: true,
             lint: true,

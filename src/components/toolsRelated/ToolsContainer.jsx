@@ -45,10 +45,10 @@ export default function SearchAndToolsContainer({ selectedComponent, onSearchRes
                 <SettingsAndSupport onOpenSettings={openSettings} />
             </div>
 
-            {/* 4x4 Grid Layout */}
-            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-4 max-w-5xl w-full">
-                <LanguagesInDirTags onLanguageClick={handleLanguageClick} />
+            {/* 2x2 Grid Layout with Languages spanning 2 rows */}
+            <div className="mt-2 grid grid-cols-2 grid-rows-2 gap-x-6 gap-y-4 max-w-5xl w-full">
                 <RecentTags onTagClick={handleTagClick} />
+                <LanguagesInDirTags onLanguageClick={handleLanguageClick} className="row-span-2" />
                 <Tools selectedComponent={selectedComponent} />
             </div>
 

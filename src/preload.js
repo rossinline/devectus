@@ -18,17 +18,32 @@ contextBridge.exposeInMainWorld('electron', {
     maximizeWindow: () => ipcRenderer.send('maximize-window'),
     closeWindow: () => ipcRenderer.send('close-window'),
     refreshWindow: () => ipcRenderer.invoke('refresh-window'),
+    
+    // Maximize/Unmaximize window handlers
+    onMaximize: (callback) => {
+        const subscription = (event) => callback();
+        ipcRenderer.on('window-maximized', subscription);
+        return () => ipcRenderer.removeListener('window-maximized', subscription);
+    },
+    onUnmaximize: (callback) => {
+        const subscription = (event) => callback();
+        ipcRenderer.on('window-unmaximized', subscription);
+        return () => ipcRenderer.removeListener('window-unmaximized', subscription);
+    },
+    removeMaximizeListener: () => ipcRenderer.removeAllListeners('window-maximized'),
+    removeUnmaximizeListener: () => ipcRenderer.removeAllListeners('window-unmaximized'),
 });
 
-// Fetch and set the theme before the app renders
-window.addEventListener('DOMContentLoaded', async () => {
-    const theme = await ipcRenderer.invoke('get-theme-setting');  // Updated channel name
-    if (theme === 'dark') {
-        document.body.classList.add('dark');
-    } else {
-        document.body.classList.remove('dark');
-    }
-    document.body.style.visibility = 'visible'; // Show the body after setting the theme
+// Quickly apply initial theme to prevent flash of unstyled content
+// App.jsx handles all actual theme management, syncing, and preference logic
+window.addEventListener('DOMContentLoaded', () => {
+    // Apply theme from localStorage (user preference) or system preference
+    const userTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = userTheme ? userTheme === 'dark' : systemPrefersDark;
+    
+    document.body.classList.toggle('dark', shouldBeDark);
+    document.body.style.visibility = 'visible';
 });
 
 console.log("!!! context bridge works !!!");

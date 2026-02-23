@@ -1,3 +1,64 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+
+:root {
+  /* Light mode colors */
+  --background: #d9d9d9;
+  --foreground: #cbc8c8;
+  --text: #000000;
+  --accent: #25964c;
+  --border: #d1d5db;
+  --muted: #9ca3af;
+
+  /* Font Family */
+  --font-heading: 'Rubik', sans-serif;
+  --font-body: 'Rubik', sans-serif;
+  
+  /* Border radius */
+  --radius-default: 4px;
+}
+
+.dark {
+  /* Dark mode colors */
+  --background: #313131;
+  --foreground: #222222;
+  --text: #ffffff;
+  --accent: #25964c;
+  --border: #374151;
+  --muted: #6b7280;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-text: var(--text);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+
+  --font-sans: var(--font-heading);
+  --font-sans: var(--font-body);
+  
+  --radius-default: 4px;
+}
+
+body {
+  color: var(--text);
+  background: var(--background);
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+  scrollbar-gutter: stable;
+}
+
+img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), system-ui, -apple-system, sans-serif;
+}
+
+/* Prevent scrollbar from pushing content */
+.scrollbar-stable {
+  scrollbar-gutter: stable;
+}

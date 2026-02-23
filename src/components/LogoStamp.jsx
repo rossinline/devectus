@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../assets/DEV_logos-02_mono_trasnparent.png';  // Import the image
+import logo from '../assets/DEV_logos-05_Green-02_transparent_alpha.png';  // Import the image
 
 export default function LogoStamp({ width = 'auto', height = '48px' }) {
     return (

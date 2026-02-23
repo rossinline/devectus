@@ -11,8 +11,8 @@ const PinnedBoxComponents = ({ name, tags, languages, onClick, isSelected }) => 
   return (
     <div
       className={`relative w-full p-4 rounded-default shadow-lg cursor-pointer ${
-        isSelected ? 'border-2 border-lm-accent' : 'bg-lm-background dark:bg-dm-background'
-      } hover:text-lm-accent bg-lm-background dark:bg-dm-background`}
+        isSelected ? 'border-2 border-accent' : 'bg-background'
+      } hover:text-accent bg-background`}
       onClick={onClick}
     >
       <div className="absolute top-3 right-3 w-auto h-12 rounded-default overflow-hidden">
@@ -21,7 +21,7 @@ const PinnedBoxComponents = ({ name, tags, languages, onClick, isSelected }) => 
           languages.map((language, index) => {
             const iconClass = languageToIconClassMap[language.toLowerCase()];
             return iconClass ? (
-              <i key={index} className={`${iconClass} devicon-plain text-md px-1 text-lm-text dark:text-dm-text group-hover:text-lm-accent dark:group-hover:text-lm-accent`} name={language}></i>
+              <i key={index} className={`${iconClass} devicon-plain text-md px-1 text-text group-hover:text-accent`} name={language}></i>
             ) : null;
           })
         ) : (
@@ -35,13 +35,13 @@ const PinnedBoxComponents = ({ name, tags, languages, onClick, isSelected }) => 
       <div className="flex flex-wrap gap-2">
         {displayedTags.map((tag, index) => (
           // Display tags for component
-          <span key={index} className="text-xs bg-lm-foreground dark:bg-dm-foreground px-2 py-1 rounded-default">
+          <span key={index} className="text-xs bg-foreground px-2 py-1 rounded-default">
             {tag}
           </span>
         ))}
       </div>
 
-      <div className="flex-shrink-0 w-full flex items-center space-x-2 justify-end mt-2">
+      <div className="shrink-0 w-full flex items-center space-x-2 justify-end mt-2">
       </div>
     </div>
   );
