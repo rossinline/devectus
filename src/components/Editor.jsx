@@ -79,7 +79,7 @@ const Editor = ({ language = '', displayName, value, onChange, isCollapsed, onTo
         <ControlledEditor
           onBeforeChange={handleChange}
           value={value}
-          className='h-full'
+          className='h-full scrollbar-thin scrollbar-thumb-muted scrollbar-track-foreground scrollbar-stable'
           options={{
             lineWrapping: true,
             lint: true,
