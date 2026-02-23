@@ -73,7 +73,7 @@ const Tools = ({ selectedComponent }) => {
               aria-label={widget.label}
               onClick={widget.onClick}
             >
-              <div className="group-hover:animate-wiggle px-4 py-2">{widget.icon}</div>
+              <div className="px-4 py-2">{widget.icon}</div>
               <span className="w-full bg-accent text-foreground px-1 py-0.5 text-xs font-bold hidden lg:block rounded-b-default group-hover:text-background">{widget.label}</span>
             </button>
           ))}

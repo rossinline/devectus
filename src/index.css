@@ -16,10 +16,6 @@
   
   /* Border radius */
   --radius-default: 4px;
-  
-  /* Animations */
-  --animate-wiggle: wiggle 1s ease-in-out infinite;
-  --animate-spin-slow: spin 3s linear infinite;
 }
 
 .dark {
@@ -44,16 +40,6 @@
   --font-sans: var(--font-body);
   
   --radius-default: 4px;
-}
-
-@keyframes wiggle {
-  0%,
-  100% {
-    transform: rotate(-5deg);
-  }
-  50% {
-    transform: rotate(5deg);
-  }
 }
 
 body {

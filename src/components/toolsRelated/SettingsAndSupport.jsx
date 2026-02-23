@@ -28,7 +28,7 @@ const SettingsAndSupport = ({ onOpenSettings }) => {
                 rel="noopener noreferrer"
                 className="group flex flex-col items-center justify-center bg-foreground hover:outline hover:outline-accent text-text rounded-default p-2 space-y-1 cursor-pointer focus:outline-2 focus:outline-accent transition-all duration-100 ease-in-out"
             >
-                <CircleHelp className="group-hover:animate-wiggle" size={18}/>
+                <CircleHelp size={18}/>
             </a>
         </div>
     );
