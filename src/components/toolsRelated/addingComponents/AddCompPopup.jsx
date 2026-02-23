@@ -6,7 +6,7 @@ const AddCompPopup = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-background rounded-default shadow-lg w-2/3 h-4/5 relative flex flex-col">
         {/* Title Bar */}
         <div className="shrink-0 flex items-center justify-between bg-background rounded-default p-4 border-b border-foreground rounded-t-default">
